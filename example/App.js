@@ -9,7 +9,7 @@
  */
 
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Binary from 'react-native-binary';
 
 export default class App extends Component<{}> {
@@ -17,13 +17,17 @@ export default class App extends Component<{}> {
     status: 'starting',
     message: '--'
   };
+
+  test = async () => {
+    const fd = await Binary.open('/Users/nat/Desktop/rn.pcm').catch(err => console.log('open err', err))
+    if(!fd) return console.log('OPen file failed')
+    const data = await Binary.readAllAsFloat32Array(fd).catch(err => console.log('Read failed', err))
+    this.setState({message: data.length})
+    await Binary.close(fd)
+  }
+
   componentDidMount() {
-    Binary.sampleMethod('Testing', 123, (message) => {
-      this.setState({
-        status: 'native callback received',
-        message
-      });
-    });
+    this.test()
   }
   render() {
     return (
